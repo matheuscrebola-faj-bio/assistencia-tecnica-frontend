@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Inicial - MCA Plus 1811</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #dc3232;
+            --primary-dark: #b82828;
+            --primary-light: #ff4545;
+            --secondary: #2c3e50;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --info: #3498db;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border: #e5e7eb;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--gray-50);
+            color: var(--text-primary);
+            padding: 32px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            background: white;
+            border-radius: 12px;
+            padding: 24px 32px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .module {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .module-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--gray-100);
+        }
+
+        .module-number {
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .module-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .test-section {
+            background: var(--gray-50);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--info);
+        }
+
+        .test-instruction {
+            background: white;
+            padding: 16px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            color: var(--gray-700);
+            line-height: 1.6;
+            border: 1px solid var(--border);
+        }
+
+        .test-instruction strong {
+            color: var(--gray-900);
+        }
+
+        .fields-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .form-description {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: -4px;
+        }
+
+        .form-input, .form-select {
+            padding: 10px 12px;
+            font-size: 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(220, 50, 50, 0.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .checkbox-group:hover {
+            border-color: var(--primary);
+            background: var(--gray-50);
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .checkbox-group label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-900);
+            cursor: pointer;
+        }
+
+        .checkbox-group.approved label {
+            color: var(--success);
+        }
+
+        .checkbox-group.rejected label {
+            color: var(--danger);
+        }
+
+        .final-status {
+            margin-top: 32px;
+            padding: 20px;
+            background: var(--gray-50);
+            border-radius: 8px;
+            border: 2px solid var(--border);
+        }
+
+        .final-status label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 8px;
+        }
+
+        .final-status select {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .final-status select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(220, 50, 50, 0.1);
+        }
+
+        .form-textarea {
+            padding: 12px;
+            font-size: 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 100px;
+            transition: all 0.2s;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(220, 50, 50, 0.1);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            padding: 12px 32px;
+            font-size: 15px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 24px;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 16px;
+            }
+
+            .page-header {
+                padding: 20px;
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+
+            .module {
+                padding: 20px;
+            }
+
+            .fields-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="page-header">
+        <h1 class="page-title">Teste Inicial - MCA Plus 1811</h1>
+        <p class="page-subtitle">Formulário de calibração e validação do equipamento</p>
+    </div>
+
+    <!-- MÓDULO 1: Testes de Calibração -->
+    <div class="module">
+        <div class="module-header">
+            <div class="module-number">1</div>
+            <h2 class="module-title">Testes de Calibração</h2>
+        </div>
+
+        <!-- Teste 1 - Aprovado -->
+        <div class="test-section">
+            <div class="test-instruction">
+                <strong>Instrução:</strong> Ligar o MCA pressionando a tecla "ferramentas". Em seguida, inserir o tubo teste com a seta para cima e teclar em "iniciar", para o início da simulação.
+            </div>
+
+            <div class="fields-grid">
+                <div class="form-group">
+                    <label>T1 (segundos)</label>
+                    <p class="form-description">5 < T1 < 12</p>
+                    <input type="number" class="form-input" step="0.1" placeholder="Ex: 8.5">
+                </div>
+
+                <div class="form-group">
+                    <label>T2 (segundos)</label>
+                    <p class="form-description">4 < T2 < 12</p>
+                    <input type="number" class="form-input" step="0.1" placeholder="Ex: 7.2">
+                </div>
+
+                <div class="form-group">
+                    <label>T100 (segundos)</label>
+                    <p class="form-description">98 < T100 < 102</p>
+                    <input type="number" class="form-input" step="0.1" placeholder="Ex: 100.5">
+                </div>
+
+                <div class="form-group">
+                    <label>T300 (segundos)</label>
+                    <p class="form-description">298 < T300 < 302</p>
+                    <input type="number" class="form-input" step="0.1" placeholder="Ex: 300.2">
+                </div>
+            </div>
+
+            <div class="checkbox-group approved">
+                <input type="checkbox" id="teste1-aprovado">
+                <label for="teste1-aprovado">Teste Aprovado</label>
+            </div>
+        </div>
+
+        <!-- Teste 2 - Reprovado -->
+        <div class="test-section">
+            <div class="test-instruction">
+                <strong>Instrução:</strong> Ligar o MCA pressionando a tecla "ferramentas". Em seguida, inserir o tubo teste com a seta para cima, <strong>porém deslocada</strong>, e teclar em "iniciar", para o início da simulação.
+            </div>
+
+            <div class="fields-grid">
+                <div class="form-group">
+                    <label>T1 (segundos)</label>
+                    <p class="form-description">5 < T1 < 12</p>
+                    <input type="number" class="form-input" step="0.1" placeholder="Ex: 8.5">
+                </div>
+
+                <div class="form-group">
+                    <label>T2 (segundos)</label>
+                    <p class="form-description">4 < T2 < 12</p>
+                    <input type="number" class="form-input" step="0.1" placeholder="Ex: 7.2">
+                </div>
+
+                <div class="form-group">
+                    <label>T100 (segundos)</label>
+                    <p class="form-description">98 < T100 < 102</p>
+                    <input type="number" class="form-input" step="0.1" placeholder="Ex: 100.5">
+                </div>
+
+                <div class="form-group">
+                    <label>T300 (segundos)</label>
+                    <p class="form-description">298 < T300 < 302</p>
+                    <input type="number" class="form-input" step="0.1" placeholder="Ex: 300.2">
+                </div>
+            </div>
+
+            <div class="checkbox-group rejected">
+                <input type="checkbox" id="teste2-reprovado">
+                <label for="teste2-reprovado">Teste Reprovado</label>
+            </div>
+        </div>
+
+        <!-- Temperatura Interna -->
+        <div class="test-section" style="border-left-color: var(--warning);">
+            <div class="form-group">
+                <label>Temperatura Interna do Tubo (°C)</label>
+                <p class="form-description">36.5 ≤ T ≤ 37.5</p>
+                <input type="number" class="form-input" step="0.1" placeholder="Ex: 37.0">
+            </div>
+        </div>
+    </div>
+
+    <!-- MÓDULO 2: Condições Ambientais -->
+    <div class="module">
+        <div class="module-header">
+            <div class="module-number">2</div>
+            <h2 class="module-title">Condições Ambientais</h2>
+        </div>
+
+        <div class="fields-grid">
+            <div class="form-group">
+                <label>Temperatura Ambiente (°C)</label>
+                <input type="number" class="form-input" step="0.1" placeholder="Ex: 23.5">
+            </div>
+
+            <div class="form-group">
+                <label>Umidade Relativa do Ar (%)</label>
+                <input type="number" class="form-input" step="0.1" placeholder="Ex: 65.0">
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 16px;">
+            <label>Observações e Não Conformidades</label>
+            <textarea class="form-textarea" placeholder="Digite aqui quaisquer observações ou não conformidades identificadas durante o processo..."></textarea>
+        </div>
+    </div>
+
+    <!-- MÓDULO 3: Equipamentos para Calibração -->
+    <div class="module">
+        <div class="module-header">
+            <div class="module-number">3</div>
+            <h2 class="module-title">Equipamentos para Calibração</h2>
+        </div>
+
+        <div class="fields-grid">
+            <div class="form-group">
+                <label>Termômetro Digital</label>
+                <select class="form-select">
+                    <option value="">Selecione um termômetro</option>
+                    <option value="term-001">Termômetro Digital TD-001</option>
+                    <option value="term-002">Termômetro Digital TD-002</option>
+                    <option value="term-003">Termômetro Digital TD-003</option>
+                    <option value="term-004">Termômetro Digital TD-004</option>
+                    <option value="term-005">Termômetro Digital TD-005</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Cronômetro</label>
+                <select class="form-select">
+                    <option value="">Selecione um cronômetro</option>
+                    <option value="cron-001">Cronômetro CR-001</option>
+                    <option value="cron-002">Cronômetro CR-002</option>
+                    <option value="cron-003">Cronômetro CR-003</option>
+                    <option value="cron-004">Cronômetro CR-004</option>
+                    <option value="cron-005">Cronômetro CR-005</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Final -->
+    <div class="final-status">
+        <label>Status Final do Equipamento</label>
+        <select id="status-final">
+            <option value="">Selecione o status</option>
+            <option value="aprovado">Aprovado</option>
+            <option value="inapto">Inapto para Uso</option>
+            <option value="orcamento">Gerar Orçamento</option>
+        </select>
+    </div>
+
+    <button class="btn-primary">Salvar Teste Inicial</button>
+</div>
+</body>
+</html>

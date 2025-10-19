@@ -1,13 +1,713 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
-  <title>AssistenciaTecnicaFront</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solicitação de Assistência Técnica</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #dc3232;
+      --primary-dark: #b82828;
+      --primary-light: #ff4545;
+      --secondary: #2c3e50;
+      --success: #27ae60;
+      --warning: #f39c12;
+      --danger: #e74c3c;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-400: #9ca3af;
+      --gray-500: #6b7280;
+      --gray-700: #374151;
+      --gray-900: #111827;
+      --text-primary: #1f2937;
+      --text-secondary: #6b7280;
+      --border: #e5e7eb;
+      --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--gray-50);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .header h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      font-size: 16px;
+      color: var(--text-secondary);
+    }
+
+    .form-card {
+      background: white;
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
+    }
+
+    .form-section {
+      margin-bottom: 32px;
+    }
+
+    .form-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--gray-900);
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--gray-200);
+    }
+
+    .section-subtitle {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .form-row.two-cols {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .form-row.three-cols {
+      grid-template-columns: 2fr 1fr 1fr;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--gray-700);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .required {
+      color: var(--danger);
+      font-weight: 700;
+    }
+
+    .form-input, .form-select, .form-textarea {
+      padding: 12px 14px;
+      font-size: 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: white;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(220, 50, 50, 0.1);
+    }
+
+    .form-input:disabled, .form-select:disabled {
+      background: var(--gray-100);
+      cursor: not-allowed;
+    }
+
+    .form-input.error, .form-select.error, .form-textarea.error {
+      border-color: var(--danger);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .error-message {
+      font-size: 13px;
+      color: var(--danger);
+      display: none;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    .btn {
+      padding: 14px 28px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .loading-spinner {
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .success-message {
+      background: rgba(39, 174, 96, 0.05);
+      border: 2px solid var(--success);
+      border-radius: 12px;
+      margin-bottom: 24px;
+      display: none;
+      overflow: hidden;
+    }
+
+    .success-message.show {
+      display: block;
+    }
+
+    .success-header {
+      background: var(--success);
+      color: white;
+      padding: 16px 20px;
+      font-weight: 600;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .success-header svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .success-content {
+      padding: 24px;
+      color: var(--text-primary);
+    }
+
+    .success-content h4 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--gray-900);
+      margin-bottom: 16px;
+    }
+
+    .address-box {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+
+    .address-box p {
+      margin-bottom: 6px;
+      color: var(--gray-700);
+      line-height: 1.6;
+    }
+
+    .address-box p:last-child {
+      margin-bottom: 0;
+    }
+
+    .address-box strong {
+      color: var(--gray-900);
+    }
+
+    .schedule-box {
+      background: rgba(52, 152, 219, 0.05);
+      border: 1px solid rgba(52, 152, 219, 0.2);
+      border-radius: 8px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+
+    .schedule-box p {
+      margin-bottom: 6px;
+      color: var(--gray-700);
+      line-height: 1.6;
+    }
+
+    .schedule-box p:last-child {
+      margin-bottom: 0;
+    }
+
+    .warning-box {
+      background: rgba(243, 156, 18, 0.05);
+      border: 1px solid var(--warning);
+      border-radius: 8px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+
+    .warning-box p {
+      color: var(--gray-700);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .warning-box strong {
+      color: var(--gray-900);
+    }
+
+    .instructions-list {
+      list-style: none;
+      padding: 0;
+      margin: 12px 0;
+    }
+
+    .instructions-list li {
+      padding: 8px 0;
+      color: var(--gray-700);
+      line-height: 1.6;
+      position: relative;
+      padding-left: 24px;
+    }
+
+    .instructions-list li:before {
+      content: "✓";
+      color: var(--success);
+      font-weight: bold;
+      position: absolute;
+      left: 0;
+    }
+
+    .help-text {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    @media (max-width: 768px) {
+      .form-card {
+        padding: 24px;
+      }
+
+      .form-row.two-cols,
+      .form-row.three-cols {
+        grid-template-columns: 1fr;
+      }
+
+      .header h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <app-root></app-root>
+<div class="container">
+  <div class="header">
+    <h1>Solicitação de Assistência Técnica</h1>
+    <p>Preencha o formulário abaixo para solicitar assistência</p>
+  </div>
+
+  <div class="form-card">
+    <div class="success-message" id="successMessage">
+      Solicitação enviada com sucesso! Entraremos em contato em breve.
+    </div>
+
+    <form id="assistenciaForm">
+      <!-- Seção: Dados da Empresa -->
+      <div class="form-section">
+        <h3 class="section-title">Dados da Empresa</h3>
+        <p class="section-subtitle">Campos obrigatórios marcados com <span class="required">*</span></p>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="empresa">Empresa <span class="required">*</span></label>
+            <input type="text" id="empresa" name="empresa" class="form-input" required>
+            <span class="error-message" id="empresaError">Campo obrigatório</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cnpj">CNPJ <span class="required">*</span></label>
+            <input type="text" id="cnpj" name="cnpj" class="form-input" placeholder="00.000.000/0000-00" maxlength="18" required>
+            <span class="error-message" id="cnpjError">CNPJ inválido</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seção: Dados do Contato -->
+      <div class="form-section">
+        <h3 class="section-title">Dados do Contato</h3>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="nomeContato">Nome do Contato (Profissional da Saúde) <span class="required">*</span></label>
+            <input type="text" id="nomeContato" name="nomeContato" class="form-input" required>
+            <span class="error-message" id="nomeContatoError">Campo obrigatório</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="setor">Setor/Categoria Profissional <span class="required">*</span></label>
+            <input type="text" id="setor" name="setor" class="form-input" placeholder="Ex: Enfermagem, Laboratório, etc." required>
+            <span class="error-message" id="setorError">Campo obrigatório</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="email">Email para Contato <span class="required">*</span></label>
+            <input type="email" id="email" name="email" class="form-input" placeholder="seuemail@exemplo.com" required>
+            <span class="error-message" id="emailError">Email inválido</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seção: Endereço -->
+      <div class="form-section">
+        <h3 class="section-title">Endereço</h3>
+
+        <div class="form-row two-cols">
+          <div class="form-group">
+            <label for="cep">CEP <span class="required">*</span></label>
+            <input type="text" id="cep" name="cep" class="form-input" placeholder="00000-000" maxlength="9" required>
+            <span class="error-message" id="cepError">CEP inválido</span>
+          </div>
+          <div class="form-group">
+            <label for="numero">Número</label>
+            <input type="text" id="numero" name="numero" class="form-input">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="logradouro">Logradouro</label>
+            <input type="text" id="logradouro" name="logradouro" class="form-input" readonly>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="complemento">Complemento</label>
+            <input type="text" id="complemento" name="complemento" class="form-input" placeholder="Apto, Sala, Bloco, etc.">
+          </div>
+        </div>
+
+        <div class="form-row two-cols">
+          <div class="form-group">
+            <label for="cidade">Cidade</label>
+            <input type="text" id="cidade" name="cidade" class="form-input" readonly>
+          </div>
+          <div class="form-group">
+            <label for="estado">Estado</label>
+            <input type="text" id="estado" name="estado" class="form-input" readonly>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seção: Informações do Produto -->
+      <div class="form-section">
+        <h3 class="section-title">Informações do Produto</h3>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="produto">Produto para Atendimento</label>
+            <select id="produto" name="produto" class="form-select">
+              <option value="">Selecione o produto</option>
+              <option value="Kit Diagnóstico">Kit Diagnóstico</option>
+              <option value="Monitor de Coagulação Ativada">Monitor de Coagulação Ativada</option>
+              <option value="Eletro System">Eletro System</option>
+              <option value="Tubos Traqueais / Próteses Endotraqueais">Tubos Traqueais / Próteses Endotraqueais</option>
+              <option value="Válvula Fala / Tampa de Decanulação">Válvula Fala / Tampa de Decanulação</option>
+              <option value="Instrumentais Cirúrgicos">Instrumentais Cirúrgicos</option>
+              <option value="Termo System">Termo System</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row two-cols">
+          <div class="form-group">
+            <label for="lote">Lote/Número de Série</label>
+            <input type="text" id="lote" name="lote" class="form-input">
+          </div>
+          <div class="form-group">
+            <label for="dataCalibração">Data da Última Calibração</label>
+            <input type="date" id="dataCalibração" name="dataCalibração" class="form-input">
+          </div>
+        </div>
+      </div>
+
+      <!-- Seção: Descrição -->
+      <div class="form-section">
+        <h3 class="section-title">Descrição do Problema</h3>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="descricao">Descreva o Ocorrido</label>
+            <textarea id="descricao" name="descricao" class="form-textarea" placeholder="Descreva detalhadamente o problema encontrado..."></textarea>
+            <span class="help-text">Forneça o máximo de detalhes possível para agilizar o atendimento</span>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="submitBtn">
+        <span id="btnText">Enviar Solicitação</span>
+        <div class="loading-spinner" id="spinner" style="display: none;"></div>
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Máscaras para inputs
+  function maskCNPJ(value) {
+    return value
+      .replace(/\D/g, '')
+      .replace(/^(\d{2})(\d)/, '$1.$2')
+      .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+      .replace(/\.(\d{3})(\d)/, '.$1/$2')
+      .replace(/(\d{4})(\d)/, '$1-$2')
+      .slice(0, 18);
+  }
+
+  function maskCEP(value) {
+    return value
+      .replace(/\D/g, '')
+      .replace(/^(\d{5})(\d)/, '$1-$2')
+      .slice(0, 9);
+  }
+
+  // Aplicar máscaras
+  document.getElementById('cnpj').addEventListener('input', function(e) {
+    e.target.value = maskCNPJ(e.target.value);
+  });
+
+  document.getElementById('cep').addEventListener('input', function(e) {
+    e.target.value = maskCEP(e.target.value);
+  });
+
+  // Buscar CEP
+  document.getElementById('cep').addEventListener('blur', async function() {
+    const cep = this.value.replace(/\D/g, '');
+
+    if (cep.length !== 8) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      const data = await response.json();
+
+      if (data.erro) {
+        document.getElementById('cepError').textContent = 'CEP não encontrado';
+        document.getElementById('cepError').classList.add('show');
+        document.getElementById('cep').classList.add('error');
+        return;
+      }
+
+      document.getElementById('logradouro').value = data.logradouro || '';
+      document.getElementById('cidade').value = data.localidade || '';
+      document.getElementById('estado').value = data.uf || '';
+
+      document.getElementById('cepError').classList.remove('show');
+      document.getElementById('cep').classList.remove('error');
+    } catch (error) {
+      console.error('Erro ao buscar CEP:', error);
+      document.getElementById('cepError').textContent = 'Erro ao buscar CEP';
+      document.getElementById('cepError').classList.add('show');
+    }
+  });
+
+  // Validação de email
+  function isValidEmail(email) {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  }
+
+  // Validação de CNPJ
+  function isValidCNPJ(cnpj) {
+    cnpj = cnpj.replace(/\D/g, '');
+
+    if (cnpj.length !== 14) return false;
+
+    // Validação básica (pode ser expandida)
+    if (/^(\d)\1+$/.test(cnpj)) return false;
+
+    return true;
+  }
+
+  // Validação do formulário
+  function validateForm() {
+    let isValid = true;
+    const requiredFields = [
+      { id: 'empresa', errorId: 'empresaError', message: 'Campo obrigatório' },
+      { id: 'cnpj', errorId: 'cnpjError', message: 'CNPJ inválido', validator: isValidCNPJ },
+      { id: 'nomeContato', errorId: 'nomeContatoError', message: 'Campo obrigatório' },
+      { id: 'setor', errorId: 'setorError', message: 'Campo obrigatório' },
+      { id: 'email', errorId: 'emailError', message: 'Email inválido', validator: isValidEmail },
+      { id: 'cep', errorId: 'cepError', message: 'CEP inválido', validator: (val) => val.replace(/\D/g, '').length === 8 }
+    ];
+
+    requiredFields.forEach(field => {
+      const input = document.getElementById(field.id);
+      const error = document.getElementById(field.errorId);
+      const value = input.value.trim();
+
+      if (!value || (field.validator && !field.validator(value))) {
+        input.classList.add('error');
+        error.textContent = field.message;
+        error.classList.add('show');
+        isValid = false;
+      } else {
+        input.classList.remove('error');
+        error.classList.remove('show');
+      }
+    });
+
+    return isValid;
+  }
+
+  // Remover erro ao digitar
+  document.querySelectorAll('.form-input, .form-select, .form-textarea').forEach(input => {
+    input.addEventListener('input', function() {
+      this.classList.remove('error');
+      const errorId = this.id + 'Error';
+      const errorElement = document.getElementById(errorId);
+      if (errorElement) {
+        errorElement.classList.remove('show');
+      }
+    });
+  });
+
+  // Envio do formulário
+  document.getElementById('assistenciaForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = document.getElementById('btnText');
+    const spinner = document.getElementById('spinner');
+
+    submitBtn.disabled = true;
+    btnText.textContent = 'Enviando...';
+    spinner.style.display = 'block';
+
+    // Coletar dados do formulário
+    const formData = {
+      empresa: document.getElementById('empresa').value,
+      cnpj: document.getElementById('cnpj').value.replace(/\D/g, ''),
+      nomeContato: document.getElementById('nomeContato').value,
+      setor: document.getElementById('setor').value,
+      email: document.getElementById('email').value,
+      cep: document.getElementById('cep').value.replace(/\D/g, ''),
+      logradouro: document.getElementById('logradouro').value,
+      numero: document.getElementById('numero').value,
+      complemento: document.getElementById('complemento').value,
+      cidade: document.getElementById('cidade').value,
+      estado: document.getElementById('estado').value,
+      produto: document.getElementById('produto').value,
+      lote: document.getElementById('lote').value,
+      dataCalibração: document.getElementById('dataCalibração').value,
+      descricao: document.getElementById('descricao').value
+    };
+
+    try {
+      // Substitua pela URL da sua API
+      const response = await fetch('https://sua-api.com/api/assistencia-tecnica', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (response.ok) {
+        document.getElementById('successMessage').classList.add('show');
+        document.getElementById('assistenciaForm').reset();
+
+        // Scroll para o topo
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Ocultar mensagem após 5 segundos
+        setTimeout(() => {
+          document.getElementById('successMessage').classList.remove('show');
+        }, 5000);
+      } else {
+        alert('Erro ao enviar solicitação. Tente novamente.');
+      }
+    } catch (error) {
+      console.error('Erro:', error);
+      alert('Erro ao enviar solicitação. Verifique sua conexão e tente novamente.');
+    } finally {
+      submitBtn.disabled = false;
+      btnText.textContent = 'Enviar Solicitação';
+      spinner.style.display = 'none';
+    }
+  });
+</script>
 </body>
 </html>

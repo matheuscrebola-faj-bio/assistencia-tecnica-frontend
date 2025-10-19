@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Service Order - Sistema</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #dc3232;
+            --primary-dark: #b82828;
+            --primary-light: #ff4545;
+            --secondary: #2c3e50;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --info: #3498db;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border: #e5e7eb;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --sidebar-width: 260px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--gray-50);
+            color: var(--text-primary);
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: white;
+            border-right: 1px solid var(--border);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-logo-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: white;
+        }
+
+        .sidebar-logo-text h1 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .sidebar-logo-text p {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .sidebar-nav {
+            padding: 16px 12px;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0 12px 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            color: var(--gray-700);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: var(--gray-100);
+            color: var(--gray-900);
+        }
+
+        .nav-item.active {
+            background: rgba(220, 50, 50, 0.1);
+            color: var(--primary);
+        }
+
+        .nav-item svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: var(--gray-50);
+        }
+
+        .header-left h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        /* Content */
+        .content {
+            padding: 32px;
+            flex: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Form Card */
+        .form-card {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .form-section {
+            margin-bottom: 32px;
+        }
+
+        .form-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 8px;
+        }
+
+        .form-section-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 6px;
+        }
+
+        .form-group label .required {
+            color: var(--danger);
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(220, 50, 50, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-hint {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        .form-error {
+            font-size: 13px;
+            color: var(--danger);
+            margin-top: 6px;
+            display: none;
+        }
+
+        .form-group.error .form-input,
+        .form-group.error .form-select,
+        .form-group.error .form-textarea {
+            border-color: var(--danger);
+        }
+
+        .form-group.error .form-error {
+            display: block;
+        }
+
+        /* Search Field */
+        .search-field {
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            color: var(--gray-400);
+            pointer-events: none;
+        }
+
+        .search-field .form-input {
+            padding-left: 40px;
+        }
+
+        .search-results {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10;
+            display: none;
+        }
+
+        .search-results.show {
+            display: block;
+        }
+
+        .search-result-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-item:hover {
+            background: var(--gray-50);
+        }
+
+        .search-result-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-900);
+        }
+
+        .search-result-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        /* Selected Item Display */
+        .selected-item {
+            display: none;
+            padding: 12px 16px;
+            background: var(--gray-50);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-top: 8px;
+        }
+
+        .selected-item.show {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .selected-item-info {
+            flex: 1;
+        }
+
+        .selected-item-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-900);
+        }
+
+        .selected-item-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .btn-remove {
+            padding: 6px 12px;
+            font-size: 12px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-remove:hover {
+            background: var(--gray-100);
+        }
+
+        /* File Upload */
+        .file-upload-area {
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 32px;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .file-upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(220, 50, 50, 0.02);
+        }
+
+        .file-upload-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 12px;
+            color: var(--gray-400);
+        }
+
+        .file-upload-text {
+            font-size: 14px;
+            color: var(--gray-700);
+            margin-bottom: 4px;
+        }
+
+        .file-upload-hint {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .files-list {
+            margin-top: 16px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: var(--gray-50);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .file-item-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .file-icon {
+            width: 32px;
+            height: 32px;
+            color: var(--primary);
+        }
+
+        .file-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-900);
+        }
+
+        .file-size {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Buttons */
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:disabled {
+            background: var(--gray-300);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--gray-700);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-50);
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid white;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Alert */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .header {
+                padding: 16px;
+            }
+
+            .content {
+                padding: 16px;
+            }
+
+            .form-card {
+                padding: 20px;
+            }
+
+            .form-actions {
+                flex-direction: column-reverse;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <div class="sidebar-logo-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+                <div class="sidebar-logo-text">
+                    <h1>Service Orders</h1>
+                    <p>Gestão de Atendimentos</p>
+                </div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Principal</div>
+                <a href="dashboard.html" class="nav-item">
+                    <svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+                    Dashboard
+                </a>
+                <a href="service-orders.html" class="nav-item active">
+                    <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                    Service Orders
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Cadastros</div>
+                <a href="customers.html" class="nav-item">
+                    <svg fill="currentColor" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                    Clientes
+                </a>
+                <a href="equipments.html" class="nav-item">
+                    <svg fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM8 20H4v-4h4v4zm0-6H4v-4h4v4zm0-6H4V4h4v4zm6 12h-4v-4h4v4zm0-6h-4v-4h4v4zm0-6h-4V4h4v4zm6 12h-4v-4h4v4zm0-6h-4v-4h4v4zm0-6h-4V4h4v4z"/></svg>
+                    Equipamentos
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <button class="back-btn" onclick="window.location.href='service-orders.html'">
+                    <svg fill="currentColor" viewBox="0 0 24 24" width="20" height="20">
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                    </svg>
+                </button>
+                <h2>Nova Service Order</h2>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="content">
+            <div id="alertContainer"></div>
+
+            <form id="serviceOrderForm" class="form-card">
+                <!-- Cliente -->
+                <div class="form-section">
+                    <h3 class="form-section-title">Cliente</h3>
+                    <p class="form-section-subtitle">Selecione o cliente para esta service order</p>
+
+                    <div class="form-group" id="customerGroup">
+                        <label>Cliente <span class="required">*</span></label>
+                        <div class="search-field">
+                            <svg class="search-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                            <input
+                                    type="text"
+                                    id="customerSearch"
+                                    class="form-input"
+                                    placeholder="Buscar cliente por nome ou documento..."
+                                    autocomplete="off"
+                            >
+                            <div id="customerResults" class="search-results"></div>
+                        </div>
+                        <input type="hidden" id="customerId" required>
+                        <div id="selectedCustomer" class="selected-item"></div>
+                        <span class="form-error">Por favor, selecione um cliente</span>
+                    </div>
+                </div>
+
+                <!-- Equipamento -->
+                <div class="form-section">
+                    <h3 class="form-section-title">Equipamento</h3>
+                    <p class="form-section-subtitle">Selecione o equipamento do cliente</p>
+
+                    <div class="form-group" id="equipmentGroup">
+                        <label>Equipamento <span class="required">*</span></label>
+                        <div class="search-field">
+                            <svg class="search-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                            <input
+                                    type="text"
+                                    id="equipmentSearch"
+                                    class="form-input"
+                                    placeholder="Buscar equipamento por serial ou modelo..."
+                                    autocomplete="off"
+                                    disabled
+                            >
+                            <div id="equipmentResults" class="search-results"></div>
+                        </div>
+                        <input type="hidden" id="equipmentId" required>
+                        <div id="selectedEquipment" class="selected-item"></div>
+                        <span class="form-hint">Selecione um cliente primeiro</span>
+                        <span class="form-error">Por favor, selecione um equipamento</span>
+                    </div>
+                </div>
+
+                <!-- Detalhes do Atendimento -->
+                <div class="form-section">
+                    <h3 class="form-section-title">Detalhes do Atendimento</h3>
+                    <p class="form-section-subtitle">Informações sobre o problema reportado</p>
+
+                    <div class="form-group">
+                        <label>Origem <span class="required">*</span></label>
+                        <select id="origem" class="form-select" required>
+                            <option value="">Selecione...</option>
+                            <option value="web_form">Formulário Web</option>
+                            <option value="telefone">Telefone</option>
+                            <option value="email">E-mail</option>
+                            <option value="presencial">Presencial</option>
+                            <option value="whatsapp">WhatsApp</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Descrição do Problema <span class="required">*</span></label>
+                        <textarea
+                                id="descricaoProblema"
+                                class="form-textarea"
+                                placeholder="Descreva detalhadamente o problema reportado pelo cliente..."
+                                required
+                        ></textarea>
+                        <span class="form-hint">Seja o mais específico possível sobre os sintomas e condições</span>
+                    </div>
+                </div>
+
+                <!-- Anexos -->
+                <div class="form-section">
+                    <h3 class="form-section-title">Anexos</h3>
+                    <p class="form-section-subtitle">Fotos ou documentos relacionados (opcional)</p>
+
+                    <div class="file-upload-area" onclick="document.getElementById('fileInput').click()">
+                        <svg class="file-upload-icon" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/>
+                        </svg>
+                        <div class="file-upload-text">Clique para selecionar arquivos</div>
+                        <div class="file-upload-hint">ou arraste arquivos aqui (máx 10MB por arquivo)</div>
+                    </div>
+                    <input
+                            type="file"
+                            id="fileInput"
+                            class="file-input"
+                            multiple
+                            accept="image/*,.pdf,.doc,.docx"
+                    >
+                    <div id="filesList" class="files-list"></div>
+                </div>
+
+                <!-- Actions -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="window.location.href='service-orders.html'">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <span id="btnText">Criar Service Order</span>
+                        <div class="spinner" id="spinner" style="display: none;"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+
+<!--<script>-->
+<!--    const API_BASE_URL = 'http://localhost:8080/api/v1';-->
+
+<!--    let selectedCustomer = null;-->
+<!--    let selectedEquipment = null;-->
+<!--    let uploadedFiles = [];-->
+
+<!--    function checkAuth() {-->
+<!--        const token = localStorage.getItem('accessToken');-->
+<!--        if (!token) {-->
+<!--            window.location.href = 'login.html';-->
+<!--            return null;-->
+<!--        }-->
+<!--        return token;-->
+<!--    }-->
+
+<!--    function getAuthHeaders() {-->
+<!--        const token = checkAuth();-->
+<!--        return {-->
+<!--            'Authorization': `Bearer ${token}`,-->
+<!--            'Content-Type': 'application/json',-->
+<!--            'Accept': 'application/json'-->
+<!--        };-->
+<!--    }-->
+
+<!--    function showAlert(message, type = 'error') {-->
+<!--        const alertContainer = document.getElementById('alertContainer');-->
+<!--        alertContainer.innerHTML = `-->
+<!--                <div class="alert alert-${type} show">-->
+<!--                    ${message}-->
+<!--                </div>-->
+<!--            `;-->
+<!--        setTimeout(() => {-->
+<!--            const alert = alertContainer.querySelector('.alert');-->
+<!--            if (alert) alert.classList.remove('show');-->
+<!--        }, 5000);-->
+<!--    }-->
+
+<!--    // Customer Search-->
+<!--    let customerSearchTimeout;-->
+<!--    document.getElementById('customerSearch').addEventListener('input', (e) => {-->
+<!--        clearTimeout(customerSearchTimeout);-->
+<!--        const query = e.target.value.trim();-->
+
+<!--        if (query.length < 2) {-->
+<!--            document.getElementById('customerResults').classList.remove('show');-->
+<!--            return;-->
+<!--        }-->
+
+<!--        customerSearchTimeout = setTimeout(() => searchCustomers(query), 300);-->
+<!--    });-->
+
+<!--    async function searchCustomers(query) {-->
+<!--        try {-->
+<!--            const response = await fetch(`${API_BASE_URL}/customers?q=${encodeURIComponent(query)}&size=10`, {-->
+<!--                headers: getAuthHeaders()-->
+<!--            });-->
+
+<!--            if (!response.ok) throw new Error('Erro ao buscar clientes');-->
+
+<!--            const data = await response.json();-->
+<!--            const customers = data.content || [];-->
+
+<!--            const resultsDiv = document.getElementById('customerResults');-->
+
+<!--            if (customers.length === 0) {-->
+<!--                resultsDiv.innerHTML = '<div style="padding: 12px 16px; color: var(&#45;&#45;text-secondary); font-size: 14px;">Nenhum cliente encontrado</div>';-->
+<!--                resultsDiv.classList.add('show');-->
+<!--                return;-->
+<!--            }-->
+
+<!--            resultsDiv.innerHTML = customers.map(customer => `-->
+<!--                    <div class="search-result-item" onclick="selectCustomer(${customer.id}, '${customer.nomeLegal}', '${customer.documento}')">-->
+<!--                        <div class="search-result-name">${customer.nomeLegal}</div>-->
+<!--                        <div class="search-result-meta">${customer.documento}</div>-->
+<!--                    </div>-->
+<!--                `).join('');-->
+
+<!--            resultsDiv.classList.add('show');-->
+
+<!--        } catch (error) {-->
+<!--            console.error('Erro ao buscar clientes:', error);-->
+<!--        }-->
+<!--    }-->
+
+<!--    function selectCustomer(id, name, documento) {-->
+<!--        selectedCustomer = { id, name, documento };-->
+<!--        document.getElementById('customerId').value = id;-->
+<!--        document.getElementById('customerSearch').value = '';-->
+<!--        document.getElementById('customerResults').classList.remove('show');-->
+<!--        document.getElementById('customerGroup').classList.remove('error');-->
+
+<!--        const selectedDiv = document.getElementById('selectedCustomer');-->
+<!--        selectedDiv.innerHTML = `-->
+<!--                <div class="selected-item-info">-->
+<!--                    <div class="selected-item-name">${name}</div>-->
+<!--                    <div class="selected-item-meta">${documento}</div>-->
+<!--                </div>-->
+<!--                <button type="button" class="btn-remove" onclick="removeCustomer()">Remover</button>-->
+<!--            `;-->
+<!--        selectedDiv.classList.add('show');-->
+
+<!--        // Enable equipment search-->
+<!--        document.getElementById('equipmentSearch').disabled = false;-->
+<!--        document.querySelector('#equipmentGroup .form-hint').textContent = 'Busque pelo serial ou modelo';-->
+<!--    }-->
+
+<!--    function removeCustomer() {-->
+<!--        selectedCustomer = null;-->
+<!--        document.getElementById('customerId').value = '';-->
+<!--        document.getElementById('selectedCustomer').classList.remove('show');-->
+<!--        document.getElementById('equipmentSearch').disabled = true;-->
+<!--        document.getElementById('equipmentSearch').value = '';-->
+<!--        removeEquipment();-->
+<!--    }-->
+
+<!--    // Equipment Search-->
+<!--    let equipmentSearchTimeout;-->
+<!--    document.getElementById('equipmentSearch').addEventListener('input', (e) => {-->
+<!--        clearTimeout(equipmentSearchTimeout);-->
+<!--        const query = e.target.value.trim();-->
+
+<!--        if (query.length < 2) {-->
+<!--            document.getElementById('equipmentResults').classList.remove('show');-->
+<!--            return;-->
+<!--        }-->
+
+<!--        equipmentSearchTimeout = setTimeout(() => searchEquipments(query), 300);-->
+<!--    });-->
+
+<!--    async function searchEquipments(query) {-->
+<!--        if (!selectedCustomer) return;-->
+
+<!--        try {-->
+<!--            const response = await fetch(-->
+<!--                `${API_BASE_URL}/equipments?customerId=${selectedCustomer.id}&serial=${encodeURIComponent(query)}&size=10`,-->
+<!--                { headers: getAuthHeaders() }-->
+<!--            );-->
+
+<!--            if (!response.ok) throw new Error('Erro ao buscar equipamentos');-->
+
+<!--            const data = await response.json();-->
+<!--            const equipments = data.content || [];-->
+
+<!--            const resultsDiv = document.getElementById('equipmentResults');-->
+
+<!--            if (equipments.length === 0) {-->
+<!--                resultsDiv.innerHTML = '<div style="padding: 12px 16px; color: var(&#45;&#45;text-secondary); font-size: 14px;">Nenhum equipamento encontrado</div>';-->
+<!--                resultsDiv.classList.add('show');-->
+<!--                return;-->
+<!--            }-->
+
+<!--            resultsDiv.innerHTML = equipments.map(equip => `-->
+<!--                    <div class="search-result-item" onclick="selectEquipment(${equip.id}, '${equip.serial}', 'Modelo #${equip.modelId}')">-->
+<!--                        <div class="search-result-name">Serial: ${equip.serial}</div>-->
+<!--                        <div class="search-result-meta">Modelo #${equip.modelId}</div>-->
+<!--                    </div>-->
+<!--                `).join('');-->
+
+<!--            resultsDiv.classList.add('show');-->
+
+<!--        } catch (error) {-->
+<!--            console.error('Erro ao buscar equipamentos:', error);-->
+<!--        }-->
+<!--    }-->
+
+<!--    function selectEquipment(id, serial, model) {-->
+<!--        selectedEquipment = { id, serial, model };-->
+<!--        document.getElementById('equipmentId').value = id;-->
+<!--        document.getElementById('equipmentSearch').value = '';-->
+<!--        document.getElementById('equipmentResults').classList.remove('show');-->
+<!--        document.getElementById('equipmentGroup').classList.remove('error');-->
+
+<!--        const selectedDiv = document.getElementById('selectedEquipment');-->
+<!--        selectedDiv.innerHTML = `-->
+<!--                <div class="selected-item-info">-->
+<!--                    <div class="selected-item-name">Serial: ${serial}</div>-->
+<!--                    <div class="selected-item-meta">${model}</div>-->
+<!--                </div>-->
+<!--                <button type="button" class="btn-remove" onclick="removeEquipment()">Remover</button>-->
+<!--            `;-->
+<!--        selectedDiv.classList.add('show');-->
+<!--    }-->
+
+<!--    function removeEquipment() {-->
+<!--        selectedEquipment = null;-->
+<!--        document.getElementById('equipmentId').value = '';-->
+<!--        document.getElementById('selectedEquipment').classList.remove('show');-->
+<!--    }-->
+
+<!--    // File Upload-->
+<!--    document.getElementById('fileInput').addEventListener('change', (e) => {-->
+<!--        const files = Array.from(e.target.files);-->
+<!--        files.forEach(file => {-->
+<!--            if (file.size > 10 * 1024 * 1024) {-->
+<!--                showAlert(`Arquivo ${file.name} excede 10MB`);-->
+<!--                return;-->
+<!--            }-->
+<!--            uploadedFiles.push(file);-->
+<!--        });-->
+<!--        renderFilesList();-->
+<!--        e.target.value = '';-->
+<!--    });-->
+
+<!--    function renderFilesList() {-->
+<!--        const filesListDiv = document.getElementById('filesList');-->
+<!--        if (uploadedFiles.length === 0) {-->
+<!--            filesListDiv.innerHTML = '';-->
+<!--            return;-->
+<!--        }-->
+
+<!--        filesListDiv.innerHTML = uploadedFiles.map((file, index) => `-->
+<!--                <div class="file-item">-->
+<!--                    <div class="file-item-info">-->
+<!--                        <svg class="file-icon" fill="currentColor" viewBox="0 0 24 24">-->
+<!--                            <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>-->
+<!--                        </svg>-->
+<!--                        <div>-->
+<!--                            <div class="file-name">${file.name}</div>-->
+<!--                            <div class="file-size">${formatFileSize(file.size)}</div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <button type="button" class="btn-remove" onclick="removeFile(${index})">Remover</button>-->
+<!--                </div>-->
+<!--            `).join('');-->
+<!--    }-->
+
+<!--    function removeFile(index) {-->
+<!--        uploadedFiles.splice(index, 1);-->
+<!--        renderFilesList();-->
+<!--    }-->
+
+<!--    function formatFileSize(bytes) {-->
+<!--        if (bytes < 1024) return bytes + ' B';-->
+<!--        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';-->
+<!--        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';-->
+<!--    }-->
+
+<!--    // Form Submit-->
+<!--    document.getElementById('serviceOrderForm').addEventListener('submit', async (e) => {-->
+<!--        e.preventDefault();-->
+
+<!--        // Validations-->
+<!--        let hasError = false;-->
+
+<!--        if (!selectedCustomer) {-->
+<!--            document.getElementById('customerGroup').classList.add('error');-->
+<!--            hasError = true;-->
+<!--        }-->
+
+<!--        if (!selectedEquipment) {-->
+<!--            document.getElementById('equipmentGroup').classList.add('error');-->
+<!--            hasError = true;-->
+<!--        }-->
+
+<!--        if (hasError) {-->
+<!--            showAlert('Por favor, preencha todos os campos obrigatórios');-->
+<!--            return;-->
+<!--        }-->
+
+<!--        const submitBtn = document.getElementById('submitBtn');-->
+<!--        const btnText = document.getElementById('btnText');-->
+<!--        const spinner = document.getElementById('spinner');-->
+
+<!--        submitBtn.disabled = true;-->
+<!--        btnText.style.display = 'none';-->
+<!--        spinner.style.display = 'inline-block';-->
+
+<!--        try {-->
+<!--            // Simular upload de arquivos (em produção, fazer upload real)-->
+<!--            const anexos = uploadedFiles.map(file => ({-->
+<!--                nome: file.name,-->
+<!--                url: `https://storage.example.com/${file.name}` // Simulado-->
+<!--            }));-->
+
+<!--            const payload = {-->
+<!--                customerId: parseInt(document.getElementById('customerId').value),-->
+<!--                equipmentId: parseInt(document.getElementById('equipmentId').value),-->
+<!--                origem: document.getElementById('origem').value,-->
+<!--                descricaoProblema: document.getElementById('descricaoProblema').value,-->
+<!--                anexos: anexos-->
+<!--            };-->
+
+<!--            const response = await fetch(`${API_BASE_URL}/service-orders`, {-->
+<!--                method: 'POST',-->
+<!--                headers: getAuthHeaders(),-->
+<!--                body: JSON.stringify(payload)-->
+<!--            });-->
+
+<!--            if (!response.ok) {-->
+<!--                const error = await response.json();-->
+<!--                throw new Error(error.error?.message || 'Erro ao criar service order');-->
+<!--            }-->
+
+<!--            const data = await response.json();-->
+
+<!--            showAlert('Service Order criada com sucesso!', 'success');-->
+
+<!--            setTimeout(() => {-->
+<!--                window.location.href = `service-order-details.html?id=${data.id}`;-->
+<!--            }, 1500);-->
+
+<!--        } catch (error) {-->
+<!--            console.error('Erro ao criar SO:', error);-->
+<!--            showAlert(error.message || 'Erro ao criar service order. Tente novamente.');-->
+<!--            submitBtn.disabled = false;-->
+<!--            btnText.style.display = 'inline';-->
+<!--            spinner.style.display = 'none';-->
+<!--        }-->
+<!--    });-->
+
+<!--    // Close search results when clicking outside-->
+<!--    document.addEventListener('click', (e) => {-->
+<!--        if (!e.target.closest('.search-field')) {-->
+<!--            document.querySelectorAll('.search-results').forEach(el => {-->
+<!--                el.classList.remove('show');-->
+<!--            });-->
+<!--        }-->
+<!--    });-->
+
+<!--    // Initialize-->
+<!--    checkAuth();-->
+<!--</script>-->
+</body>
+</html>

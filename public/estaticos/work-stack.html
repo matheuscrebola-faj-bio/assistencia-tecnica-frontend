@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fila de Trabalho - Sistema de Ordem de Serviço</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #dc3232;
+            --primary-dark: #b82828;
+            --primary-light: #ff4545;
+            --secondary: #2c3e50;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --info: #3498db;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border: #e5e7eb;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --sidebar-width: 260px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--gray-50);
+            color: var(--text-primary);
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-left h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:disabled {
+            background: var(--gray-300);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--gray-700);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-50);
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-icon:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-300);
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .user-menu:hover {
+            background: var(--gray-100);
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Content */
+        .content {
+            padding: 32px;
+            flex: 1;
+        }
+
+        /* Stats */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        .stat-icon.primary {
+            background: rgba(220, 50, 50, 0.1);
+            color: var(--primary);
+        }
+
+        .stat-icon.warning {
+            background: rgba(243, 156, 18, 0.1);
+            color: var(--warning);
+        }
+
+        .stat-icon.info {
+            background: rgba(52, 152, 219, 0.1);
+            color: var(--info);
+        }
+
+        /* Work Queue Cards */
+        .queue-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .queue-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .queue-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .results-count {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .queue-container {
+            padding: 24px;
+        }
+
+        .queue-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .queue-card {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.2s;
+            cursor: pointer;
+            background: white;
+        }
+
+        .queue-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .queue-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 16px;
+        }
+
+        .queue-card-id {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .os-number {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .priority-badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .priority-high {
+            background: rgba(231, 76, 60, 0.1);
+            color: #c0392b;
+        }
+
+        .priority-medium {
+            background: rgba(243, 156, 18, 0.1);
+            color: #d68910;
+        }
+
+        .priority-normal {
+            background: rgba(52, 152, 219, 0.1);
+            color: #2471a3;
+        }
+
+        .age-badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--gray-100);
+            color: var(--gray-700);
+        }
+
+        .age-warning {
+            background: rgba(243, 156, 18, 0.1);
+            color: var(--warning);
+        }
+
+        .age-danger {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--danger);
+        }
+
+        .queue-card-body {
+            margin-bottom: 16px;
+        }
+
+        .queue-info-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: var(--gray-700);
+        }
+
+        .queue-info-row svg {
+            width: 16px;
+            height: 16px;
+            color: var(--gray-400);
+            flex-shrink: 0;
+        }
+
+        .queue-info-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+            min-width: 70px;
+        }
+
+        .queue-info-value {
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .defect-description {
+            margin-top: 12px;
+            padding: 12px;
+            background: var(--gray-50);
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--gray-700);
+            line-height: 1.5;
+        }
+
+        .queue-card-footer {
+            display: flex;
+            gap: 8px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 64px 24px;
+        }
+
+        .spinner-large {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--gray-200);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 64px 24px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: var(--gray-100);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .empty-state-icon svg {
+            width: 40px;
+            height: 40px;
+            color: var(--gray-400);
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            margin-bottom: 20px;
+            color: var(--text-secondary);
+        }
+
+        /* Error State */
+        .error-state {
+            text-align: center;
+            padding: 64px 24px;
+        }
+
+        .error-state-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: rgba(231, 76, 60, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .error-state-icon svg {
+            width: 40px;
+            height: 40px;
+            color: var(--danger);
+        }
+
+        .error-state h3 {
+            font-size: 18px;
+            color: var(--gray-900);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .error-state p {
+            font-size: 14px;
+            margin-bottom: 20px;
+            color: var(--text-secondary);
+        }
+
+        /* Hidden utility */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+            }
+
+            .header {
+                padding: 16px;
+            }
+
+            .content {
+                padding: 16px;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+
+            .queue-card-header {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .queue-card-footer {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div>
+                    <h2>Fila de Trabalho</h2>
+                    <p class="header-subtitle">Selecione uma ordem de serviço para assumir</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="btn-icon" id="refreshBtn" title="Atualizar">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                </button>
+                <div class="user-menu">
+                    <div class="user-avatar">TC</div>
+                    <span>Técnico</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <main class="content">
+            <!-- Stats -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-icon primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                    </div>
+                    <div class="stat-label">Disponíveis</div>
+                    <div class="stat-value" id="totalAvailable">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon warning">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div class="stat-label">Aguardando há mais de 24h</div>
+                    <div class="stat-value" id="totalUrgent">-</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon info">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <div class="stat-label">Alta Prioridade</div>
+                    <div class="stat-value" id="totalHighPriority">-</div>
+                </div>
+            </div>
+
+            <!-- Queue Section -->
+            <div class="queue-section">
+                <div class="queue-header">
+                    <h3 class="queue-title">Ordens de Serviço Disponíveis</h3>
+                    <span class="results-count" id="resultsCount">-</span>
+                </div>
+
+                <!-- Loading State -->
+                <div class="loading" id="loadingState">
+                    <div class="spinner-large"></div>
+                    <p class="loading-text">Carregando ordens de serviço...</p>
+                </div>
+
+                <!-- Empty State -->
+                <div class="empty-state hidden" id="emptyState">
+                    <div class="empty-state-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3>Nenhuma OS disponível</h3>
+                    <p>Não há ordens de serviço aguardando atribuição no momento.</p>
+                    <button class="btn btn-secondary btn-sm" onclick="location.reload()">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        Atualizar
+                    </button>
+                </div>
+
+                <!-- Error State -->
+                <div class="error-state hidden" id="errorState">
+                    <div class="error-state-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3>Erro ao carregar</h3>
+                    <p id="errorMessage">Não foi possível carregar as ordens de serviço. Tente novamente.</p>
+                    <button class="btn btn-primary btn-sm" onclick="location.reload()">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        Tentar novamente
+                    </button>
+                </div>
+
+                <!-- Queue Container (Cards) -->
+                <div class="queue-container hidden" id="queueContainer">
+                    <div class="queue-grid" id="queueGrid">
+                        <!-- Cards will be inserted here dynamically -->
+
+                        <!-- Example Card (Template - remove in production) -->
+                        <div class="queue-card">
+                            <div class="queue-card-header">
+                                <div class="queue-card-id">
+                                    <span class="os-number">#OS-2024-001</span>
+                                    <span class="priority-badge priority-high">Alta</span>
+                                </div>
+                                <span class="age-badge age-danger">36h</span>
+                            </div>
+                            <div class="queue-card-body">
+                                <div class="queue-info-row">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                    <span class="queue-info-label">Cliente:</span>
+                                    <span class="queue-info-value">João Silva</span>
+                                </div>
+                                <div class="queue-info-row">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                    </svg>
+                                    <span class="queue-info-label">Produto:</span>
+                                    <span class="queue-info-value">iPhone 13 Pro</span>
+                                </div>
+                                <div class="queue-info-row">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    <span class="queue-info-label">Entrada:</span>
+                                    <span class="queue-info-value">17/10/2025 14:30</span>
+                                </div>
+                                <div class="defect-description">
+                                    <strong>Defeito:</strong> Tela não liga após queda. Cliente relatou que o aparelho caiu e a tela ficou preta.
+                                </div>
+                            </div>
+                            <div class="queue-card-footer">
+                                <button class="btn btn-primary" style="flex: 1;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Assumir
+                                </button>
+                                <button class="btn btn-secondary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    Ver Detalhes
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    // Simulation of API calls and state management
+    // In production, replace with actual API calls
+
+    // Mock data
+    const mockServiceOrders = [
+        {
+            id: 1,
+            osNumber: 'OS-2024-001',
+            customer: 'João Silva',
+            product: 'iPhone 13 Pro',
+            defect: 'Tela não liga após queda. Cliente relatou que o aparelho caiu e a tela ficou preta.',
+            createdAt: '2025-10-17T14:30:00',
+            priority: 'high',
+            ageHours: 36
+        },
+        {
+            id: 2,
+            osNumber: 'OS-2024-002',
+            customer: 'Maria Santos',
+            product: 'Samsung Galaxy S21',
+            defect: 'Não carrega. Porta USB com problema.',
+            createdAt: '2025-10-18T09:15:00',
+            priority: 'medium',
+            ageHours: 12
+        },
+        {
+            id: 3,
+            osNumber: 'OS-2024-003',
+            customer: 'Pedro Costa',
+            product: 'Notebook Dell Inspiron',
+            defect: 'Não liga. LED de energia não acende.',
+            createdAt: '2025-10-19T08:00:00',
+            priority: 'normal',
+            ageHours: 3
+        }
+    ];
+
+    // State management
+    let currentState = 'loading'; // loading, empty, error, success
+    let serviceOrders = [];
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+        loadWorkQueue();
+
+        // Refresh button
+        document.getElementById('refreshBtn').addEventListener('click', loadWorkQueue);
+    });
+
+    // Load work queue
+    function loadWorkQueue() {
+        setState('loading');
+
+        // Simulate API call
+        setTimeout(() => {
+            // Simulate random states for demonstration
+            const random = Math.random();
+
+            if (random < 0.1) {
+                // 10% chance of error
+                setState('error', 'Erro de conexão com o servidor.');
+            } else if (random < 0.3) {
+                // 20% chance of empty
+                serviceOrders = [];
+                setState('empty');
+            } else {
+                // 70% chance of success
+                serviceOrders = mockServiceOrders;
+                setState('success');
+            }
+        }, 1500);
+    }
+
+    // Set state
+    function setState(state, errorMsg = '') {
+        currentState = state;
+
+        // Hide all states
+        document.getElementById('loadingState').classList.add('hidden');
+        document.getElementById('emptyState').classList.add('hidden');
+        document.getElementById('errorState').classList.add('hidden');
+        document.getElementById('queueContainer').classList.add('hidden');
+
+        // Show appropriate state
+        switch(state) {
+            case 'loading':
+                document.getElementById('loadingState').classList.remove('hidden');
+                updateStats(0, 0, 0);
+                document.getElementById('resultsCount').textContent = '-';
+                break;
+
+            case 'empty':
+                document.getElementById('emptyState').classList.remove('hidden');
+                updateStats(0, 0, 0);
+                document.getElementById('resultsCount').textContent = '0 ordens encontradas';
+                break;
+
+            case 'error':
+                document.getElementById('errorState').classList.remove('hidden');
+                document.getElementById('errorMessage').textContent = errorMsg;
+                updateStats(0, 0, 0);
+                document.getElementById('resultsCount').textContent = '-';
+                break;
+
+            case 'success':
+                document.getElementById('queueContainer').classList.remove('hidden');
+                renderServiceOrders();
+
+                // Calculate stats
+                const total = serviceOrders.length;
+                const urgent = serviceOrders.filter(so => so.ageHours > 24).length;
+                const highPriority = serviceOrders.filter(so => so.priority === 'high').length;
+
+                updateStats(total, urgent, highPriority);
+                document.getElementById('resultsCount').textContent = `${total} ${total === 1 ? 'ordem encontrada' : 'ordens encontradas'}`;
+                break;
+        }
+    }
+
+    // Update stats
+    function updateStats(total, urgent, highPriority) {
+        document.getElementById('totalAvailable').textContent = total;
+        document.getElementById('totalUrgent').textContent = urgent;
+        document.getElementById('totalHighPriority').textContent = highPriority;
+    }
+
+    // Render service orders
+    function renderServiceOrders() {
+        const grid = document.getElementById('queueGrid');
+        grid.innerHTML = '';
+
+        serviceOrders.forEach(so => {
+            const card = createServiceOrderCard(so);
+            grid.appendChild(card);
+        });
+    }
+
+    // Create service order card
+    function createServiceOrderCard(so) {
+        const card = document.createElement('div');
+        card.className = 'queue-card';
+
+        // Calculate age badge class
+        let ageBadgeClass = 'age-badge';
+        if (so.ageHours > 48) {
+            ageBadgeClass += ' age-danger';
+        } else if (so.ageHours > 24) {
+            ageBadgeClass += ' age-warning';
+        }
+
+        // Priority badge class
+        let priorityClass = 'priority-badge';
+        let priorityText = '';
+        switch(so.priority) {
+            case 'high':
+                priorityClass += ' priority-high';
+                priorityText = 'Alta';
+                break;
+            case 'medium':
+                priorityClass += ' priority-medium';
+                priorityText = 'Média';
+                break;
+            default:
+                priorityClass += ' priority-normal';
+                priorityText = 'Normal';
+        }
+
+        // Format date
+        const date = new Date(so.createdAt);
+        const formattedDate = date.toLocaleString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        card.innerHTML = `
+                <div class="queue-card-header">
+                    <div class="queue-card-id">
+                        <span class="os-number">#${so.osNumber}</span>
+                        <span class="${priorityClass}">${priorityText}</span>
+                    </div>
+                    <span class="${ageBadgeClass}">${so.ageHours}h</span>
+                </div>
+                <div class="queue-card-body">
+                    <div class="queue-info-row">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        <span class="queue-info-label">Cliente:</span>
+                        <span class="queue-info-value">${so.customer}</span>
+                    </div>
+                    <div class="queue-info-row">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                        <span class="queue-info-label">Produto:</span>
+                        <span class="queue-info-value">${so.product}</span>
+                    </div>
+                    <div class="queue-info-row">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span class="queue-info-label">Entrada:</span>
+                        <span class="queue-info-value">${formattedDate}</span>
+                    </div>
+                    <div class="defect-description">
+                        <strong>Defeito:</strong> ${so.defect}
+                    </div>
+                </div>
+                <div class="queue-card-footer">
+                    <button class="btn btn-primary" style="flex: 1;" onclick="assignToMe(${so.id})">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Assumir
+                    </button>
+                    <button class="btn btn-secondary" onclick="viewDetails(${so.id})">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        Ver Detalhes
+                    </button>
+                </div>
+            `;
+
+        return card;
+    }
+
+    // Assign service order to current user
+    function assignToMe(id) {
+        const so = serviceOrders.find(order => order.id === id);
+        if (!so) return;
+
+        if (confirm(`Deseja assumir a OS #${so.osNumber}?`)) {
+            // Simulate API call
+            // In production: PATCH /api/v1/service-orders/{id}/assign with { self: true }
+
+            console.log(`Assigning OS ${id} to current user...`);
+
+            // Simulate loading
+            const buttons = event.target.closest('.queue-card-footer').querySelectorAll('button');
+            buttons.forEach(btn => btn.disabled = true);
+
+            setTimeout(() => {
+                alert(`OS #${so.osNumber} assumida com sucesso!`);
+                // In production: redirect to OS details page
+                // window.location.href = `/service-order-detail.html?id=${id}`;
+
+                // Remove from queue
+                serviceOrders = serviceOrders.filter(order => order.id !== id);
+
+                if (serviceOrders.length === 0) {
+                    setState('empty');
+                } else {
+                    setState('success');
+                }
+            }, 1000);
+        }
+    }
+
+    // View service order details
+    function viewDetails(id) {
+        console.log(`Viewing details for OS ${id}...`);
+        // In production: redirect to OS details page
+        // window.location.href = `/service-order-detail.html?id=${id}`;
+        alert(`Redirecionando para detalhes da OS ${id}...\n(Em produção, isso abrirá a página de detalhes)`);
+    }
+</script>
+</body>
+</html>
